@@ -7,7 +7,7 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || ''
 const MINIMAX_BASE_URL = process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1'
-const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-Text-01'
+const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M2.5'
 
 app.use(express.json({ limit: '50kb' }))
 
@@ -158,7 +158,10 @@ app.post('/api/interpret', async (req, res) => {
     }
 
     const data = await response.json()
-    const content = data.choices?.[0]?.message?.content || ''
+    let content = data.choices?.[0]?.message?.content || ''
+
+    // Strip thinking tags from MiniMax response
+    content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
 
     res.json({ content })
   } catch (err) {
@@ -168,7 +171,7 @@ app.post('/api/interpret', async (req, res) => {
 })
 
 // SPA fallback
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
