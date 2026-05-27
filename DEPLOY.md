@@ -108,7 +108,7 @@
 ### 本地环境变量 (.env)
 
 ```
-MINIMAX_API_KEY=REMOVED_API_KEY
+MINIMAX_API_KEY=sk-your-minimax-key-here
 MINIMAX_BASE_URL=https://api.minimax.chat/v1
 MINIMAX_MODEL=MiniMax-M2.7
 PORT=3001
@@ -118,7 +118,7 @@ PORT=3001
 
 ```bash
 cd /www/server/xinghe-tumai
-MINIMAX_API_KEY=REMOVED_API_KEY PORT=3001 pm2 start server.js --name xinghe-tumai
+MINIMAX_API_KEY=sk-your-minimax-key-here PORT=3001 pm2 start server.js --name xinghe-tumai
 pm2 save
 ```
 
@@ -152,7 +152,7 @@ cd /www/server/xinghe-tumai
 npm install --omit=dev
 
 # 5. 启动服务 (PM2)
-MINIMAX_API_KEY=REMOVED_API_KEY PORT=3001 pm2 start server.js --name xinghe-tumai
+MINIMAX_API_KEY=sk-your-minimax-key-here PORT=3001 pm2 start server.js --name xinghe-tumai
 pm2 save
 
 # 6. 配置 Nginx (仅首次，已配置则跳过)
