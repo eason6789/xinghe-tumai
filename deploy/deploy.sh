@@ -48,29 +48,23 @@ ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_HOST << ENDSSH
     cd $REMOTE_SERVER_DIR
     npm install --omit=dev --silent
 
-    # 停止旧进程
-    if [ -f /tmp/xinghe-tumai.pid ]; then
-        kill \$(cat /tmp/xinghe-tumai.pid) 2>/dev/null || true
-        sleep 1
-    fi
-
-    if lsof -i:3001 > /dev/null 2>&1; then
-        echo "端口3001已被占用，停止旧进程..."
-        kill \$(lsof -t -i:3001) 2>/dev/null || true
-        sleep 1
-    fi
-
-    # 启动Node.js API服务
+    # 使用 PM2 重启/启动服务
     export MINIMAX_API_KEY="${MINIMAX_API_KEY:-}"
-    export PORT=3001
-    nohup node $REMOTE_SERVER_DIR/server.js > /var/log/xinghe-tumai.log 2>&1 &
-    echo \$! > /tmp/xinghe-tumai.pid
-    echo "API服务已启动，PID: \$!"
+    if pm2 list 2>/dev/null | grep -q "xinghe-tumai"; then
+        echo "重启现有 xinghe-tumai 服务..."
+        MINIMAX_API_KEY="${MINIMAX_API_KEY}" PORT=3001 pm2 restart xinghe-tumai
+    else
+        echo "启动 xinghe-tumai 服务..."
+        cd $REMOTE_SERVER_DIR
+        MINIMAX_API_KEY="${MINIMAX_API_KEY}" PORT=3001 pm2 start server.js --name xinghe-tumai
+    fi
+    pm2 save
+    echo "✅ PM2 服务已就绪"
 
     sleep 2
 
     # 检查API服务
-    if curl -s http://localhost:3001/api/interpret -X POST -H "Content-Type: application/json" -d '{}' > /dev/null 2>&1; then
+    if curl -s http://localhost:3001/api/interpret -X POST -H "Content-Type: application/json" -d '{"runeAnalysis":[]}' > /dev/null 2>&1; then
         echo "✅ API服务可达（/api/interpret）"
     else
         echo "⚠️  API服务端口可达，等待就绪..."

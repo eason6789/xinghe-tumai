@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/xinghe-tumai/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3001',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/xinghe-tumai/, ''),
       },
