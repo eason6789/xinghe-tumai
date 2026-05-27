@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3001
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || ''
 const MINIMAX_BASE_URL = process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1'
 const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M2.7'
@@ -130,6 +130,10 @@ app.post('/api/interpret', async (req, res) => {
 
     if (!MINIMAX_API_KEY) {
       return res.status(500).json({ error: 'API key not configured' })
+    }
+
+    if (!runeAnalysis || !Array.isArray(runeAnalysis) || runeAnalysis.length === 0) {
+      return res.status(400).json({ error: 'Missing or invalid runeAnalysis' })
     }
 
     const prompt = buildPrompt(runeAnalysis, spatialRelations, runesSummary)

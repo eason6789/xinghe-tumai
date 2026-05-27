@@ -18,7 +18,7 @@ REMOTE_HOST="${REMOTE_HOST:-root@your_server_ip}"
 REMOTE_PORT="${REMOTE_PORT:-22}"
 LOCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 REMOTE_SERVER_DIR="/www/server/xinghe-tumai"
-REMOTE_WWW_DIR="/var/www/landingPage/xinghe-tumai"
+REMOTE_WWW_DIR="/var/www/landingpage/xinghe-tumai"
 
 echo "📦 构建项目..."
 cd "$LOCAL_DIR"
@@ -54,15 +54,15 @@ ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_HOST << ENDSSH
         sleep 1
     fi
 
-    if lsof -i:3000 > /dev/null 2>&1; then
-        echo "端口3000已被占用，停止旧进程..."
-        kill \$(lsof -t -i:3000) 2>/dev/null || true
+    if lsof -i:3001 > /dev/null 2>&1; then
+        echo "端口3001已被占用，停止旧进程..."
+        kill \$(lsof -t -i:3001) 2>/dev/null || true
         sleep 1
     fi
 
     # 启动Node.js API服务
     export MINIMAX_API_KEY="${MINIMAX_API_KEY:-}"
-    export PORT=3000
+    export PORT=3001
     nohup node $REMOTE_SERVER_DIR/server.js > /var/log/xinghe-tumai.log 2>&1 &
     echo \$! > /tmp/xinghe-tumai.pid
     echo "API服务已启动，PID: \$!"
@@ -70,7 +70,7 @@ ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_HOST << ENDSSH
     sleep 2
 
     # 检查API服务
-    if curl -s http://localhost:3000/api/interpret -X POST -H "Content-Type: application/json" -d '{}' > /dev/null 2>&1; then
+    if curl -s http://localhost:3001/api/interpret -X POST -H "Content-Type: application/json" -d '{}' > /dev/null 2>&1; then
         echo "✅ API服务可达（/api/interpret）"
     else
         echo "⚠️  API服务端口可达，等待就绪..."
@@ -88,7 +88,7 @@ ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_HOST << ENDSSH
             sed -i '/^}/i \
     # === 星河图脉 ===\
     location /xinghe-tumai/api/ {\
-        proxy_pass http://127.0.0.1:3000/api/;\
+        proxy_pass http://127.0.0.1:3001/api/;\
         proxy_http_version 1.1;\
         proxy_set_header Host \$host;\
         proxy_set_header X-Real-IP \$remote_addr;\
@@ -98,7 +98,7 @@ ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_HOST << ENDSSH
         proxy_connect_timeout 10s;\
     }\
     location /xinghe-tumai/ {\
-        alias /var/www/landingPage/xinghe-tumai/;\
+        alias /var/www/landingpage/xinghe-tumai/;\
         index index.html;\
         try_files \$uri \$uri/ /xinghe-tumai/index.html;\
     }' "\$NGINX_CONF"
