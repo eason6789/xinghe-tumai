@@ -7,7 +7,7 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || ''
 const MINIMAX_BASE_URL = process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1'
-const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M2.5'
+const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M2.7'
 
 app.use(express.json({ limit: '50kb' }))
 
