@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const KEYFRAMES = ['/kf1-shutter.jpg', '/kf2-vortex.jpg', '/kf3-flash.jpg', '/kf4-reveal.jpg']
+const COS_BASE = 'https://single-az-1251416377.cos.ap-guangzhou.myqcloud.com/xinghe-tumai'
+const KEYFRAMES = [
+  `${COS_BASE}/kf1-shutter.jpg`,
+  `${COS_BASE}/kf2-vortex.jpg`,
+  `${COS_BASE}/kf3-flash.jpg`,
+  `${COS_BASE}/kf4-reveal.jpg`,
+]
 
 export default function CameraShutter({
   active,
