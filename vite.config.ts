@@ -4,11 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  base: '/xinghe-tumai/',
   server: {
     proxy: {
-      '/api': {
+      '/xinghe-tumai/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/xinghe-tumai/, ''),
       },
     },
   },

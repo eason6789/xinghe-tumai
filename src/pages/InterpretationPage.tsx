@@ -157,7 +157,7 @@ export default function InterpretationPage() {
     async function fetchInterpretation() {
       setLlmLoading(true)
       try {
-        const resp = await fetch('/api/interpret', {
+        const resp = await fetch('/xinghe-tumai/api/interpret', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

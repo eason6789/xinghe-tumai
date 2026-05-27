@@ -5,8 +5,9 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 const PORT = process.env.PORT || 3000
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || ''
-const DEEPSEEK_BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com'
+const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || ''
+const MINIMAX_BASE_URL = process.env.MINIMAX_BASE_URL || 'https://api.minimax.chat/v1'
+const MINIMAX_MODEL = process.env.MINIMAX_MODEL || 'MiniMax-Text-01'
 
 app.use(express.json({ limit: '50kb' }))
 
@@ -127,20 +128,20 @@ app.post('/api/interpret', async (req, res) => {
   try {
     const { runeAnalysis, spatialRelations, runesSummary } = req.body
 
-    if (!DEEPSEEK_API_KEY) {
+    if (!MINIMAX_API_KEY) {
       return res.status(500).json({ error: 'API key not configured' })
     }
 
     const prompt = buildPrompt(runeAnalysis, spatialRelations, runesSummary)
 
-    const response = await fetch(`${DEEPSEEK_BASE_URL}/v1/chat/completions`, {
+    const response = await fetch(`${MINIMAX_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
+        'Authorization': `Bearer ${MINIMAX_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: MINIMAX_MODEL,
         messages: [
           { role: 'system', content: '你是一位精通东方命理学与星象学的古老智者，你的解读深刻、诗意、直指人心。' },
           { role: 'user', content: prompt },
@@ -152,7 +153,7 @@ app.post('/api/interpret', async (req, res) => {
 
     if (!response.ok) {
       const errText = await response.text()
-      console.error('DeepSeek API error:', response.status, errText)
+      console.error('MiniMax API error:', response.status, errText)
       return res.status(response.status).json({ error: 'LLM API error', detail: errText })
     }
 
@@ -173,7 +174,7 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
-  if (!DEEPSEEK_API_KEY) {
-    console.warn('WARNING: DEEPSEEK_API_KEY not set. /api/interpret will fail.')
+  if (!MINIMAX_API_KEY) {
+    console.warn('WARNING: MINIMAX_API_KEY not set. /api/interpret will fail.')
   }
 })
