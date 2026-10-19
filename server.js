@@ -67,11 +67,13 @@ function computeSpatialRelations(runeAnalysis) {
 }
 
 function buildPrompt(runeAnalysis, spatialRelations, runesSummary) {
-  const runeDetails = runeAnalysis.map((item) =>
-    `- 【${item.rune.name}】（${item.rune.element}·${item.rune.polarity === 'yang' ? '阳' : '阴'}）位置(x:${Math.round(item.x)}, y:${Math.round(item.y)}) 旋转${Math.round(item.rotation)}° → ${item.meaning}。位于${item.zone}，方向：${item.direction}`
-  ).join('\n')
+  const runeDetails = (Array.isArray(runeAnalysis) ? runeAnalysis : [])
+    .filter((item) => item && item.rune)
+    .map((item) =>
+      `- 【${item.rune.name}】（${item.rune.element}·${item.rune.polarity === 'yang' ? '阳' : '阴'}）位置(x:${Math.round(item.x)}, y:${Math.round(item.y)}) 旋转${Math.round(item.rotation)}° → ${item.rune.meaning}。位于${item.zone}，方向：${item.direction}`
+    ).join('\n')
 
-  const relationDetails = (spatialRelations || []).map((rel) =>
+  const relationDetails = (Array.isArray(spatialRelations) ? spatialRelations : []).map((rel) =>
     `- ${rel.runeA} ↔ ${rel.runeB}：空间${rel.spatial.description}（距离${rel.spatial.distance}），旋转角度差${rel.rotation.diff}°（${rel.rotation.alignment}），五行：${rel.element}`
   ).join('\n')
 
